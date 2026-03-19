@@ -1,0 +1,21 @@
+.stat-card {
+  background: rgba(255, 255, 255, 0.18);
+  padding: 25px 35px;
+  border-radius: 18px;
+  text-align: center;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  transition: 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-6px) scale(1.03);
+}
+
+.stat-number {
+  font-size: 2.4rem;
+  font-weight: bold;
+  margin-top: 5px;
+  color: #00e0ff;
+  text-shadow: 0 3px 10px rgba(0,0,0,0.3);
+}

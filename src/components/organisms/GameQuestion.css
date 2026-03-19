@@ -1,0 +1,40 @@
+.gr-panel {
+  background: #ffffff11;
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+
+.gr-question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.gr-timer {
+  width: 120px;
+}
+
+.gr-timer-label {
+  font-weight: bold;
+  text-align: center;
+}
+
+.gr-timer-bar {
+  background: #333;
+  height: 8px;
+  border-radius: 4px;
+  margin-top: 5px;
+}
+
+.gr-timer-bar-fill {
+  background: #4caf50;
+  height: 100%;
+  border-radius: 4px;
+}
+
+.gr-options-grid {
+  display: grid;
+  gap: 12px;
+  margin-top: 20px;
+}

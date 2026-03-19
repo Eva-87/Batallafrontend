@@ -1,0 +1,35 @@
+.gr-panel {
+  background: #ffffff11;
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+
+.gr-ranking-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 20px;
+}
+
+.gr-ranking-item {
+  display: flex;
+  justify-content: space-between;
+  background: #ffffff22;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.gr-ranking-pos {
+  font-weight: bold;
+  color: #ffd700;
+}
+
+.gr-ranking-name {
+  flex: 1;
+  margin-left: 10px;
+}
+
+.gr-ranking-score {
+  font-weight: bold;
+}

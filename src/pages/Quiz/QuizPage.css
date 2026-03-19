@@ -1,0 +1,66 @@
+.create-quiz-page {
+  width: 100%;
+  min-height: 100vh;
+  padding: 40px;
+  background: linear-gradient(135deg, #6a5af9, #ff6ec7, #00e0ff);
+  background-size: 300% 300%;
+  animation: gradientFlow 12s ease infinite;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  color: white;
+  font-family: "Poppins", sans-serif;
+}
+
+/* Fondo animado */
+@keyframes gradientFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Contenedor del formulario */
+.quiz-page-container {
+  width: 100%;
+  max-width: 900px;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 30px;
+  border-radius: 20px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+  animation: fadeIn 0.8s ease;
+}
+
+/* Animación */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Título */
+.quiz-page-container h2 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 20px;
+  text-shadow: 0 3px 10px rgba(0,0,0,0.3);
+}
+
+/* Botón */
+.quiz-page-container button {
+  width: 100%;
+  padding: 14px;
+  background: #00e0ff;
+  border: none;
+  border-radius: 12px;
+  color: #222;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.25s ease;
+  font-size: 18px;
+  margin-top: 20px;
+}
+
+.quiz-page-container button:hover {
+  background: #00c0dd;
+  transform: scale(1.05);
+}

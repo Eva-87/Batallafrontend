@@ -1,0 +1,38 @@
+.quiz-card-profile {
+  background: rgba(255, 255, 255, 0.25);
+  padding: 15px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  transition: 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.quiz-card-profile:hover {
+  transform: translateY(-5px) scale(1.02);
+}
+
+.quiz-card-image {
+  width: 120px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+.quiz-card-info h3 {
+  margin: 0;
+}
+
+.quiz-card-topic {
+  opacity: 0.85;
+  margin: 4px 0 10px;
+}
+
+.quiz-card-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}

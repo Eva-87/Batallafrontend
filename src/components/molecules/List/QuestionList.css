@@ -1,0 +1,20 @@
+.ql-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 10px;
+}
+
+.ql-item {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  transition: 0.25s ease;
+  backdrop-filter: blur(6px);
+  color: white;
+}
+
+.ql-item:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-3px);
+}

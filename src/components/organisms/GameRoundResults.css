@@ -1,0 +1,33 @@
+.gr-panel {
+  background: #ffffff11;
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+
+.gr-scores-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.gr-score-item {
+  display: flex;
+  justify-content: space-between;
+  background: #ffffff22;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.gr-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.gr-actions button {
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+}

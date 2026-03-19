@@ -1,0 +1,15 @@
+.answer-options {
+  display: grid;
+  gap: 10px;
+}
+.answer-option {
+  padding: 12px;
+  border-radius: 8px;
+  background: #ffffff22;
+  border: 1px solid #ffffff44;
+  cursor: pointer;
+}
+.answer-option.selected {
+  background: #4a90e2;
+  color: white;
+}

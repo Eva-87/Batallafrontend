@@ -1,0 +1,43 @@
+.gr-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #222;
+  padding: 15px;
+  border-radius: 10px;
+  color: white;
+}
+
+.gr-logo {
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+.gr-room-code-box {
+  background: #444;
+  padding: 5px 10px;
+  border-radius: 6px;
+  margin-left: 8px;
+}
+
+.gr-status {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.gr-status-lobby {
+  background: #4a90e2;
+}
+
+.gr-status-playing {
+  background: #ff9800;
+}
+
+.gr-status-showing_results {
+  background: #9c27b0;
+}
+
+.gr-status-finished {
+  background: #4caf50;
+}

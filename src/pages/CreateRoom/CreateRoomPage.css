@@ -1,0 +1,95 @@
+.create-room-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #1e1e2f, #2a2a40);
+  padding: 20px;
+}
+
+.create-room-card {
+  background: #ffffff10;
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  padding: 40px;
+  width: 420px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+  animation: fadeIn 0.4s ease;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.subtitle {
+  color: #ddd;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.label {
+  color: #fff;
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.fancy-select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: #ffffff20;
+  color: #fff;
+  font-size: 16px;
+  outline: none;
+  transition: 0.2s;
+}
+
+.fancy-select:hover {
+  background: #ffffff30;
+}
+
+.fancy-select option {
+  background: #1e1e2f;
+  color: #fff;
+}
+
+.create-room-btn {
+  width: 100%;
+  padding: 14px;
+  font-size: 18px;
+  border-radius: 12px;
+  background: #4a90e2;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.create-room-btn:hover {
+  background: #357ab8;
+}
+
+.glow {
+  box-shadow: 0 0 12px #4a90e2;
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+.pop {
+  animation: pop 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pop {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}

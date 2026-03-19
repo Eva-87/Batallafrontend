@@ -1,0 +1,23 @@
+.gr-panel {
+  background: #ffffff11;
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+
+.gr-btn {
+  padding: 12px 20px;
+  border-radius: 8px;
+  background: #4a90e2;
+  color: white;
+  cursor: pointer;
+  border: none;
+  margin-top: 20px;
+}
+
+.gr-players-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 15px;
+}
