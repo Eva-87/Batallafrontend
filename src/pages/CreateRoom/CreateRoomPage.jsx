@@ -33,13 +33,25 @@ export default function CreateRoomPage() {
   const handleCreate = async () => {
     if (!user) return alert("Debes iniciar sesión");
 
+    const payload = {
+      userId: Number(user.id),
+      quizId: Number(quizId),
+      maxPlayers: Number(maxPlayers)
+    };
+
+    console.log("ENVIANDO PAYLOAD:", payload);
+
     const res = await fetch("http://localhost:8080/api/rooms/create", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: user.id, quizId, maxPlayers })
+      body: JSON.stringify(payload)
     });
 
-    if (!res.ok) return alert("Error creando sala");
+    if (!res.ok) {
+      const text = await res.text();
+      console.error("ERROR BACKEND:", text);
+      return alert("Error creando sala");
+    }
 
     const room = await res.json();
     navigate(`/game/${room.code}`);
@@ -72,7 +84,7 @@ export default function CreateRoomPage() {
             min="2"
             max="20"
             value={maxPlayers}
-            onChange={e => setMaxPlayers(e.target.value)}
+            onChange={e => setMaxPlayers(Number(e.target.value))}
           />
         </div>
 

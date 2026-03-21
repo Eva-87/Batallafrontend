@@ -25,15 +25,14 @@ export default function GameRoomPage() {
 
   const user = useMemo(() => JSON.parse(localStorage.getItem("user")), []);
 
-  // ⭐ NUEVA VERSIÓN ROBUSTA DE isHost
   const isHost =
-    room?.creator?.id === user?.id ||
     room?.creatorId === user?.id ||
+    room?.creator?.id === user?.id ||
     room?.creator?.user?.id === user?.id;
 
-  // -----------------------------
-  // POLLING SEGURO
-  // -----------------------------
+  // ---------------------------------------------------------
+  // POLLING
+  // ---------------------------------------------------------
   useEffect(() => {
     const poll = () => {
       fetch(`http://localhost:8080/api/rooms/${roomCode}`)
@@ -54,9 +53,9 @@ export default function GameRoomPage() {
     return () => clearInterval(interval);
   }, [roomCode]);
 
-  // -----------------------------
+  // ---------------------------------------------------------
   // TIMER
-  // -----------------------------
+  // ---------------------------------------------------------
   useEffect(() => {
     if (!question) return;
 
@@ -77,48 +76,48 @@ export default function GameRoomPage() {
     return () => clearInterval(interval);
   }, [question]);
 
-  // -----------------------------
-  // ACCIONES
-  // -----------------------------
+  // ---------------------------------------------------------
+  // HOST ACTIONS
+  // ---------------------------------------------------------
   const startGame = () => {
     fetch(`http://localhost:8080/api/rooms/${roomCode}/start`, {
       method: "POST"
     })
-      .then(res => res.ok ? res.json() : null)
-      .then(q => q && setQuestion(q));
-  };
-
-  const sendAnswer = index => {
-    if (hasAnswered) return;
-
-    setHasAnswered(true);
-    setSelectedIndex(index);
-
-    fetch(`http://localhost:8080/api/game/${roomCode}/answer`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        userId: user.id,
-        chosenIndex: index
+      .then(async res => {
+        const text = await res.text();
+        if (!text) return null;
+        return JSON.parse(text);
       })
-    })
-      .then(res => res.ok ? res.json() : null)
-      .then(result => result && setRoundResult(result));
+      .then(q => {
+        setRoundResult(null);
+        q && setQuestion(q);
+      });
   };
 
   const nextQuestion = () => {
     fetch(`http://localhost:8080/api/rooms/${roomCode}/next`, {
       method: "POST"
     })
-      .then(res => res.ok ? res.json() : null)
-      .then(q => q && setQuestion(q));
+      .then(async res => {
+        const text = await res.text();
+        if (!text) return null;
+        return JSON.parse(text);
+      })
+      .then(q => {
+        setRoundResult(null);
+        q && setQuestion(q);
+      });
   };
 
   const finishGame = () => {
     fetch(`http://localhost:8080/api/rooms/${roomCode}/finish`, {
       method: "POST"
     })
-      .then(res => res.ok ? res.json() : null)
+      .then(async res => {
+        const text = await res.text();
+        if (!text) return null;
+        return JSON.parse(text);
+      })
       .then(data => {
         if (data) {
           setRanking(data.ranking);
@@ -126,6 +125,31 @@ export default function GameRoomPage() {
           setRoundResult(null);
         }
       });
+  };
+
+  // ---------------------------------------------------------
+  // PLAYER ACTIONS
+  // ---------------------------------------------------------
+  const sendAnswer = index => {
+    if (hasAnswered) return;
+
+    setHasAnswered(true);
+    setSelectedIndex(index);
+
+    fetch(`http://localhost:8080/api/rooms/${roomCode}/answer`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId: user.id,
+        chosenIndex: index
+      })
+    })
+      .then(async res => {
+        const text = await res.text();
+        if (!text) return null;
+        return JSON.parse(text);
+      })
+      .then(result => result && setRoundResult(result));
   };
 
   if (!room) return <p>Cargando sala...</p>;
@@ -168,4 +192,3 @@ export default function GameRoomPage() {
     </div>
   );
 }
-

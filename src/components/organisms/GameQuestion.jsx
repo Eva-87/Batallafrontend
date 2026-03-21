@@ -10,16 +10,26 @@ export default function GameQuestion({
   hasAnswered,
   onAnswer
 }) {
+  const isCorrect = hasAnswered && selectedIndex === question.correctIndex;
+
   return (
-    <div className="gr-panel">
+    <div className={`gr-panel ${hasAnswered ? (isCorrect ? "correct" : "incorrect") : ""}`}>
+      
       <Timer time={timeLeft} />
       <QuestionDisplay question={question} />
+
       <AnswerOptions
         options={question.options}
         selected={selectedIndex}
         onSelect={onAnswer}
         disabled={hasAnswered}
       />
+
+      {hasAnswered && (
+        <div className="feedback-box">
+          {isCorrect ? "✔ ¡Correcto!" : "✘ Incorrecto"}
+        </div>
+      )}
     </div>
   );
 }

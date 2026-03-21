@@ -38,3 +38,30 @@
   gap: 12px;
   margin-top: 20px;
 }
+.correct {
+  background-color: rgba(76, 175, 80, 0.3); /* verde suave */
+  transition: background-color 0.3s ease;
+}
+
+.incorrect {
+  background-color: rgba(244, 67, 54, 0.3); /* rojo suave */
+  transition: background-color 0.3s ease;
+}
+
+.feedback-box {
+  margin-top: 20px;
+  padding: 15px;
+  font-size: 22px;
+  font-weight: bold;
+  text-align: center;
+  border-radius: 10px;
+  color: white;
+}
+
+.correct .feedback-box {
+  background-color: #4caf50;
+}
+
+.incorrect .feedback-box {
+  background-color: #f44336;
+}
