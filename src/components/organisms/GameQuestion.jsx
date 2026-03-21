@@ -1,6 +1,3 @@
-import Timer from "../atoms/Timer/Timer";
-import QuestionDisplay from "../molecules/QuestionDisplay/QuestionDisplay";
-import AnswerOptions from "../molecules/AnswerOptions/AnswerOptions";
 import "./GameQuestion.css";
 
 export default function GameQuestion({
@@ -10,26 +7,28 @@ export default function GameQuestion({
   hasAnswered,
   onAnswer
 }) {
-  const isCorrect = hasAnswered && selectedIndex === question.correctIndex;
+  if (!question) return null;
 
   return (
-    <div className={`gr-panel ${hasAnswered ? (isCorrect ? "correct" : "incorrect") : ""}`}>
-      
-      <Timer time={timeLeft} />
-      <QuestionDisplay question={question} />
+    <div className="question-container">
+      <h2>{question.text}</h2>
 
-      <AnswerOptions
-        options={question.options}
-        selected={selectedIndex}
-        onSelect={onAnswer}
-        disabled={hasAnswered}
-      />
+      <div className="timer">Tiempo restante: {timeLeft}s</div>
 
-      {hasAnswered && (
-        <div className="feedback-box">
-          {isCorrect ? "✔ ¡Correcto!" : "✘ Incorrecto"}
-        </div>
-      )}
+      <div className="options">
+        {question.options.map((opt, idx) => (
+          <button
+            key={idx}
+            className={`option-btn ${
+              selectedIndex === idx ? "selected" : ""
+            }`}
+            disabled={hasAnswered}
+            onClick={() => onAnswer(idx)}
+          >
+            {opt}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

@@ -23,6 +23,8 @@ export default function GameRoomPage() {
   const [roundResult, setRoundResult] = useState(null);
   const [ranking, setRanking] = useState(null);
 
+  const [pausePolling, setPausePolling] = useState(false);
+
   const user = useMemo(() => JSON.parse(localStorage.getItem("user")), []);
 
   const isHost =
@@ -30,34 +32,36 @@ export default function GameRoomPage() {
     room?.creator?.id === user?.id ||
     room?.creator?.user?.id === user?.id;
 
-  // ---------------------------------------------------------
+  // -----------------------------
   // POLLING
-  // ---------------------------------------------------------
+  // -----------------------------
   useEffect(() => {
     const poll = () => {
+      if (pausePolling) return;
+
       fetch(`http://localhost:8080/api/rooms/${roomCode}`)
-        .then(res => res.ok ? res.json() : null)
+        .then(res => (res.ok ? res.json() : null))
         .then(data => data && setRoom(data));
 
       fetch(`http://localhost:8080/api/rooms/${roomCode}/players`)
-        .then(res => res.ok ? res.json() : [])
+        .then(res => (res.ok ? res.json() : []))
         .then(data => setPlayers(data));
 
       fetch(`http://localhost:8080/api/rooms/${roomCode}/status`)
-        .then(res => res.ok ? res.json() : null)
+        .then(res => (res.ok ? res.json() : null))
         .then(st => st && setStatus(st));
     };
 
     poll();
     const interval = setInterval(poll, 1500);
     return () => clearInterval(interval);
-  }, [roomCode]);
+  }, [roomCode, pausePolling]);
 
-  // ---------------------------------------------------------
+  // -----------------------------
   // TIMER
-  // ---------------------------------------------------------
+  // -----------------------------
   useEffect(() => {
-    if (!question) return;
+    if (!question || !Array.isArray(question.options)) return;
 
     setTimeLeft(30);
     setSelectedIndex(null);
@@ -76,65 +80,78 @@ export default function GameRoomPage() {
     return () => clearInterval(interval);
   }, [question]);
 
-  // ---------------------------------------------------------
-  // HOST ACTIONS
-  // ---------------------------------------------------------
+  // -----------------------------
+  // START GAME
+  // -----------------------------
   const startGame = () => {
     fetch(`http://localhost:8080/api/rooms/${roomCode}/start`, {
       method: "POST"
     })
-      .then(async res => {
-        const text = await res.text();
-        if (!text) return null;
-        return JSON.parse(text);
-      })
+      .then(res => res.text())
+      .then(text => (text ? JSON.parse(text) : null))
       .then(q => {
         setRoundResult(null);
-        q && setQuestion(q);
+        if (q) {
+          setQuestion(q);
+          setStatus("PLAYING");
+        }
       });
   };
 
+  // -----------------------------
+  // NEXT QUESTION
+  // -----------------------------
   const nextQuestion = () => {
     fetch(`http://localhost:8080/api/rooms/${roomCode}/next`, {
       method: "POST"
     })
-      .then(async res => {
-        const text = await res.text();
-        if (!text) return null;
-        return JSON.parse(text);
-      })
+      .then(res => res.text())
+      .then(text => (text ? JSON.parse(text) : null))
       .then(q => {
         setRoundResult(null);
-        q && setQuestion(q);
+        setPausePolling(false);
+
+        if (q) {
+          setQuestion(q);
+          setStatus("PLAYING");
+        } else {
+          finishGame();
+        }
       });
   };
 
+  // -----------------------------
+  // FINISH GAME
+  // -----------------------------
   const finishGame = () => {
     fetch(`http://localhost:8080/api/rooms/${roomCode}/finish`, {
       method: "POST"
     })
-      .then(async res => {
-        const text = await res.text();
-        if (!text) return null;
-        return JSON.parse(text);
-      })
+      .then(res => res.text())
+      .then(text => (text ? JSON.parse(text) : null))
       .then(data => {
         if (data) {
           setRanking(data.ranking);
           setQuestion(null);
           setRoundResult(null);
+          setPausePolling(false);
+          setStatus("FINISHED");
         }
       });
   };
 
-  // ---------------------------------------------------------
-  // PLAYER ACTIONS
-  // ---------------------------------------------------------
+  // -----------------------------
+  // SEND ANSWER
+  // -----------------------------
   const sendAnswer = index => {
     if (hasAnswered) return;
 
     setHasAnswered(true);
     setSelectedIndex(index);
+
+    if (!isHost) {
+      setPausePolling(true);
+    }
 
     fetch(`http://localhost:8080/api/rooms/${roomCode}/answer`, {
       method: "POST",
@@ -144,14 +161,21 @@ export default function GameRoomPage() {
         chosenIndex: index
       })
     })
-      .then(async res => {
-        const text = await res.text();
-        if (!text) return null;
-        return JSON.parse(text);
-      })
-      .then(result => result && setRoundResult(result));
+      .then(res => res.text())
+      .then(text => (text ? JSON.parse(text) : null))
+      .then(result => {
+        if (!result) return;
+        setRoundResult(result);
+
+        if (isHost) {
+          setPausePolling(false);
+        }
+      });
   };
 
+  // -----------------------------
+  // RENDER
+  // -----------------------------
   if (!room) return <p>Cargando sala...</p>;
 
   return (
@@ -159,11 +183,7 @@ export default function GameRoomPage() {
       <GameHeader room={room} status={status} />
 
       {status === "LOBBY" && (
-        <GameLobby
-          players={players}
-          isHost={isHost}
-          onStart={startGame}
-        />
+        <GameLobby players={players} isHost={isHost} onStart={startGame} />
       )}
 
       {status === "PLAYING" && question && (
@@ -176,10 +196,10 @@ export default function GameRoomPage() {
         />
       )}
 
-      {status === "SHOWING_RESULTS" && roundResult && (
+      {status === "SHOWING_RESULTS" && roundResult && question && (
         <GameRoundResults
           roundResult={roundResult}
-          players={players}
+          question={question}
           isHost={isHost}
           onNext={nextQuestion}
           onFinish={finishGame}

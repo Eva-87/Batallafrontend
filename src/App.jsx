@@ -40,8 +40,6 @@ export default function App() {
         <Route path="/homepage/create-quiz/:quizId" element={<CreateQuizPage />} />
         <Route path="/quiz/:id" element={<QuizPage />} />
 
-        {/* ❌ ESTA RUTA YA NO SE USA Y NO DEBE EXISTIR */}
-        {/* <Route path="/create-room" element={<CreateRoomPage />} /> */}
 
       </Routes>
     </BrowserRouter>

@@ -1,33 +1,16 @@
-.gr-panel {
-  background: #ffffff11;
-  padding: 20px;
-  border-radius: 12px;
-  margin-top: 20px;
+.correct-title {
+  color: #2ecc71;
+  font-size: 2rem;
+  margin-bottom: 10px;
 }
 
-.gr-scores-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin: 15px 0;
+.incorrect-title {
+  color: #e74c3c;
+  font-size: 2rem;
+  margin-bottom: 10px;
 }
 
-.gr-score-item {
-  display: flex;
-  justify-content: space-between;
-  background: #ffffff22;
-  padding: 10px;
-  border-radius: 8px;
-}
-
-.gr-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.gr-actions button {
-  padding: 10px 15px;
-  border-radius: 8px;
-  cursor: pointer;
+.correct-answer {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
 }

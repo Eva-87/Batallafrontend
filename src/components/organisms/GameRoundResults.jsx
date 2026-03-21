@@ -2,38 +2,46 @@ import "./GameRoundResults.css";
 
 export default function GameRoundResults({
   roundResult,
-  players,
+  question,
   isHost,
   onNext,
   onFinish
 }) {
+  if (!roundResult || !question) return null;
+
   return (
-    <div className="gr-panel">
+    <div className="results-container">
       <h2>Resultados de la ronda</h2>
 
       <p>
         Respuesta correcta:{" "}
-        <strong>{["A", "B", "C", "D"][roundResult.correctIndex]}</strong>
+        <strong>{question.options[roundResult.correctIndex]}</strong>
       </p>
 
-      <div className="gr-scores-list">
-        {Object.entries(roundResult.scores)
-          .sort(([, a], [, b]) => b - a)
-          .map(([userId, score]) => {
-            const player = players.find((p) => p.user.id === Number(userId));
-            return (
-              <div key={userId} className="gr-score-item">
-                <span>{player ? player.user.username : "Jugador"}</span>
-                <span>{score} pts</span>
-              </div>
-            );
-          })}
-      </div>
+      {question.explanation && (
+        <p className="explanation">
+          Explicación: {question.explanation}
+        </p>
+      )}
+
+      <h3>Puntajes:</h3>
+      <ul>
+        {Object.entries(roundResult.scores).map(([userId, score]) => (
+          <li key={userId}>
+            Usuario {userId}: {score} puntos
+          </li>
+        ))}
+      </ul>
 
       {isHost && (
-        <div className="gr-actions">
-          <button onClick={onNext}>Siguiente pregunta</button>
-          <button onClick={onFinish}>Terminar juego</button>
+        <div className="host-controls">
+          <button className="next-btn" onClick={onNext}>
+            Siguiente pregunta
+          </button>
+
+          <button className="finish-btn" onClick={onFinish}>
+            Terminar juego
+          </button>
         </div>
       )}
     </div>

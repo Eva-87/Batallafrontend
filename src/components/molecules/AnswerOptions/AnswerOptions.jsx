@@ -3,7 +3,8 @@ import "./AnswerOptions.css";
 export default function AnswerOptions({ options, selected, onSelect, disabled }) {
   return (
     <div className="answer-options">
-      {options.map((opt, i) => (
+      {Array.isArray(options) && options.map((opt, i) => (
+
         <button
           key={i}
           className={`answer-option ${selected === i ? "selected" : ""}`}
@@ -17,3 +18,6 @@ export default function AnswerOptions({ options, selected, onSelect, disabled })
     </div>
   );
 }
+
+
+
