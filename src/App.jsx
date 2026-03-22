@@ -13,9 +13,19 @@ import QuizPage from "./pages/Quiz/QuizPage";
 
 import ProfilePage from "./pages/Profile/ProfilePage";
 
+// ⭐ Navbar global
+import Navbar from "./components/layout/Navbar";
+
+// ⭐ Footer global
+import FooterNav from "./components/layout/FooterNav";
+
 export default function App() {
   return (
     <BrowserRouter>
+
+      {/* ⭐ NAVBAR GLOBAL */}
+      <Navbar />
+
       <Routes>
 
         {/* HOME */}
@@ -40,9 +50,11 @@ export default function App() {
         <Route path="/homepage/create-quiz/:quizId" element={<CreateQuizPage />} />
         <Route path="/quiz/:id" element={<QuizPage />} />
 
-
       </Routes>
+
+      {/* ⭐ FOOTER GLOBAL */}
+      <FooterNav />
+
     </BrowserRouter>
   );
 }
-

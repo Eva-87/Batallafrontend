@@ -25,7 +25,7 @@ export default function QuizCard({ quiz, onEdit, onDelete, onPlay, onInvite }) {
 
           {/* ⭐ JUGAR SOLO */}
           <button className="play-btn" onClick={() => onPlay(quiz.id)}>
-            ▶ Jugar
+            ▶ Jugar Solo
           </button>
         </div>
       </div>

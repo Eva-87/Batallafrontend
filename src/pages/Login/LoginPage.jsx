@@ -55,6 +55,14 @@ export default function LoginPage() {
           ¿No tienes cuenta?{" "}
           <span onClick={() => navigate("/homepage/register")}>Regístrate aquí</span>
         </p>
+
+        <button onClick={() => {
+  localStorage.removeItem("user");
+  navigate("/homepage/login");
+}}>
+  Cerrar sesión
+</button>
+
       </div>
     </div>
   );

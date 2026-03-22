@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function QuestionForm({ onQuestionCreated }) {
+export default function QuestionForm({userId, onQuestionCreated }) {
   const [text, setText] = useState("");
   const [optionA, setOptionA] = useState("");
   const [optionB, setOptionB] = useState("");
@@ -20,7 +20,7 @@ export default function QuestionForm({ onQuestionCreated }) {
       correctIndex,
     };
 
-    const res = await fetch("http://localhost:8080/api/questions/create", {
+    const res = await fetch(`http://localhost:8080/api/questions/create/${userId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

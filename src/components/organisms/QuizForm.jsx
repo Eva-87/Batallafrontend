@@ -20,40 +20,38 @@ export default function QuizForm() {
   const [questions, setQuestions] = useState([]);
   const [selectedQuestions, setSelectedQuestions] = useState([]);
 
+  const [customTopics, setCustomTopics] = useState([]);
+  const [newTopicName, setNewTopicName] = useState("");
+
   const user = JSON.parse(localStorage.getItem("user"));
 
   // -----------------------------
-  // CARGAR TODAS LAS PREGUNTAS
+  // CARGAR CUSTOM TOPICS
   // -----------------------------
   useEffect(() => {
-    fetch("http://localhost:8080/api/questions")
-      .then((res) => {
-        if (!res.ok) throw new Error("Error cargando preguntas");
-        return res.json();
-      })
-      .then((data) => setQuestions(data))
-      .catch((err) => console.error(err));
-  }, []); // ⭐ SOLO SE EJECUTA UNA VEZ
+    fetch("http://localhost:8080/api/custom-topics")
+      .then((res) => res.json())
+      .then((data) => setCustomTopics(data))
+      .catch((err) => console.error("Error cargando custom topics:", err));
+  }, []);
 
   // -----------------------------
   // CARGAR QUIZ SI ESTAMOS EDITANDO
   // -----------------------------
   useEffect(() => {
-    if (!quizId) return;
+    if (!quizId) return; // ⭐ Si NO estamos editando → no cargar nada
 
     fetch(`http://localhost:8080/api/quizzes/${quizId}`)
-      .then((res) => {
-        if (!res.ok) throw new Error("Error obteniendo quiz");
-        return res.json();
-      })
+      .then((res) => res.json())
       .then((quiz) => {
-        setTitle(quiz.title || "");
-        setTopic(quiz.topic || "GENERAL");
-        setImageUrl(quiz.imageUrl || null);
+        setTitle(quiz.title);
+        setTopic(quiz.topic);
+        setImageUrl(quiz.imageUrl);
 
-        // ⭐ IMPORTANTE: solo IDs, no objetos
-        if (quiz.questionIds) {
-          setSelectedQuestions(quiz.questionIds);
+        // ⭐ Cargar SOLO las preguntas del quiz
+        if (quiz.questions) {
+          setQuestions(quiz.questions); // preguntas completas
+          setSelectedQuestions(quiz.questions.map((q) => q.id)); // IDs seleccionados
         }
 
         setLoading(false);
@@ -62,7 +60,38 @@ export default function QuizForm() {
         console.error("Error cargando quiz:", err);
         setLoading(false);
       });
-  }, [quizId]); // ⭐ SOLO CAMBIA SI CAMBIA EL ID
+  }, [quizId]);
+
+  // -----------------------------
+  // CREAR NUEVO TOPIC PERSONALIZADO
+  // -----------------------------
+  const handleCreateTopic = async () => {
+    if (!newTopicName.trim()) {
+      return alert("El nombre del tópico no puede estar vacío");
+    }
+
+    const res = await fetch(
+      `http://localhost:8080/api/custom-topics/create/${user.id}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newTopicName),
+      }
+    );
+
+    if (!res.ok) {
+      const error = await res.text();
+      return alert("Error creando tópico: " + error);
+    }
+
+    const created = await res.json();
+
+    setCustomTopics((prev) => [...prev, created]);
+    setTopic(created.name);
+    setNewTopicName("");
+
+    alert("Tópico creado correctamente");
+  };
 
   // -----------------------------
   // SELECCIONAR / DESELECCIONAR PREGUNTA
@@ -90,7 +119,6 @@ export default function QuizForm() {
     }
 
     if (quizId) {
-      // UPDATE
       const body = {
         title,
         topic,
@@ -114,12 +142,19 @@ export default function QuizForm() {
 
       alert("Quiz actualizado correctamente");
     } else {
-      // CREATE
       const formData = new FormData();
       formData.append("title", title);
       formData.append("topic", topic);
       formData.append("userId", user.id);
-      formData.append("isCustomTopic", false);
+      formData.append(
+        "isCustomTopic",
+        topic !== "GENERAL" &&
+          topic !== "MATEMATICAS" &&
+          topic !== "HISTORIA" &&
+          topic !== "CIENCIA" &&
+          topic !== "DEPORTES" &&
+          topic !== "OTROS"
+      );
       formData.append("questionIds", JSON.stringify(selectedQuestions));
       formData.append("imageUrl", finalImage);
 
@@ -168,16 +203,32 @@ export default function QuizForm() {
         <option value="HISTORIA">HISTORIA</option>
         <option value="CIENCIA">CIENCIA</option>
         <option value="DEPORTES">DEPORTES</option>
+        <option value="OTROS">OTROS</option>
+
+        {customTopics.map((t) => (
+          <option key={t.id} value={t.name}>
+            {t.name}
+          </option>
+        ))}
       </select>
+
+      {topic === "OTROS" && (
+        <div className="custom-topic-box">
+          <input
+            className="input"
+            placeholder="Nuevo tópico..."
+            value={newTopicName}
+            onChange={(e) => setNewTopicName(e.target.value)}
+          />
+          <button onClick={handleCreateTopic}>Crear tópico</button>
+        </div>
+      )}
 
       {imageUrl && (
         <img src={imageUrl} alt="Quiz" className="quiz-image-preview" />
       )}
 
-      <input
-        type="file"
-        onChange={(e) => setTopicImage(e.target.files[0])}
-      />
+      <input type="file" onChange={(e) => setTopicImage(e.target.files[0])} />
 
       <h3>Preguntas disponibles</h3>
 
@@ -190,6 +241,7 @@ export default function QuizForm() {
       <h3>Crear nueva pregunta</h3>
 
       <QuestionForm
+        userId={user.id}
         onQuestionCreated={(newQuestion) => {
           setQuestions((prev) => [...prev, newQuestion]);
         }}
