@@ -10,6 +10,7 @@ import GameFinalRanking from "../../components/organisms/GameFinalRanking";
 
 export default function GameRoomPage() {
   const { roomCode } = useParams();
+  const cleanRoomCode = roomCode ? roomCode.trim() : "";
 
   const [room, setRoom] = useState(null);
   const [players, setPlayers] = useState([]);
@@ -23,8 +24,6 @@ export default function GameRoomPage() {
   const [roundResult, setRoundResult] = useState(null);
   const [ranking, setRanking] = useState(null);
 
-  const [pausePolling, setPausePolling] = useState(false);
-
   const user = useMemo(() => JSON.parse(localStorage.getItem("user")), []);
 
   const isHost =
@@ -32,22 +31,30 @@ export default function GameRoomPage() {
     room?.creator?.id === user?.id ||
     room?.creator?.user?.id === user?.id;
 
-  // -----------------------------
+  // ---------------------------------------------------------
   // POLLING
-  // -----------------------------
+  // ---------------------------------------------------------
   useEffect(() => {
-    const poll = () => {
-      if (pausePolling) return;
+    if (!cleanRoomCode) return;
 
-      fetch(`http://localhost:8080/api/rooms/${roomCode}`)
+    const poll = () => {
+      // Room info
+      fetch(`http://localhost:8080/api/rooms/${cleanRoomCode}`)
         .then(res => (res.ok ? res.json() : null))
         .then(data => data && setRoom(data));
 
-      fetch(`http://localhost:8080/api/rooms/${roomCode}/players`)
+      // Current question (⭐ clave para que Pili vea la pregunta)
+      fetch(`http://localhost:8080/api/rooms/${cleanRoomCode}/question`)
+        .then(res => (res.ok ? res.json() : null))
+        .then(q => q && setQuestion(q));
+
+      // Players
+      fetch(`http://localhost:8080/api/rooms/${cleanRoomCode}/players`)
         .then(res => (res.ok ? res.json() : []))
         .then(data => setPlayers(data));
 
-      fetch(`http://localhost:8080/api/rooms/${roomCode}/status`)
+      // Status
+      fetch(`http://localhost:8080/api/rooms/${cleanRoomCode}/status`)
         .then(res => (res.ok ? res.json() : null))
         .then(st => st && setStatus(st));
     };
@@ -55,11 +62,11 @@ export default function GameRoomPage() {
     poll();
     const interval = setInterval(poll, 1500);
     return () => clearInterval(interval);
-  }, [roomCode, pausePolling]);
+  }, [cleanRoomCode]);
 
-  // -----------------------------
+  // ---------------------------------------------------------
   // TIMER
-  // -----------------------------
+  // ---------------------------------------------------------
   useEffect(() => {
     if (!question || !Array.isArray(question.options)) return;
 
@@ -80,11 +87,11 @@ export default function GameRoomPage() {
     return () => clearInterval(interval);
   }, [question]);
 
-  // -----------------------------
+  // ---------------------------------------------------------
   // START GAME
-  // -----------------------------
+  // ---------------------------------------------------------
   const startGame = () => {
-    fetch(`http://localhost:8080/api/rooms/${roomCode}/start`, {
+    fetch(`http://localhost:8080/api/rooms/${cleanRoomCode}/start`, {
       method: "POST"
     })
       .then(res => res.text())
@@ -98,18 +105,17 @@ export default function GameRoomPage() {
       });
   };
 
-  // -----------------------------
+  // ---------------------------------------------------------
   // NEXT QUESTION
-  // -----------------------------
+  // ---------------------------------------------------------
   const nextQuestion = () => {
-    fetch(`http://localhost:8080/api/rooms/${roomCode}/next`, {
+    fetch(`http://localhost:8080/api/rooms/${cleanRoomCode}/next`, {
       method: "POST"
     })
       .then(res => res.text())
       .then(text => (text ? JSON.parse(text) : null))
       .then(q => {
         setRoundResult(null);
-        setPausePolling(false);
 
         if (q) {
           setQuestion(q);
@@ -120,11 +126,11 @@ export default function GameRoomPage() {
       });
   };
 
-  // -----------------------------
+  // ---------------------------------------------------------
   // FINISH GAME
-  // -----------------------------
+  // ---------------------------------------------------------
   const finishGame = () => {
-    fetch(`http://localhost:8080/api/rooms/${roomCode}/finish`, {
+    fetch(`http://localhost:8080/api/rooms/${cleanRoomCode}/finish`, {
       method: "POST"
     })
       .then(res => res.text())
@@ -134,31 +140,29 @@ export default function GameRoomPage() {
           setRanking(data.ranking);
           setQuestion(null);
           setRoundResult(null);
-          setPausePolling(false);
           setStatus("FINISHED");
         }
       });
   };
 
-  // -----------------------------
+  // ---------------------------------------------------------
   // SEND ANSWER
-  // -----------------------------
+  // ---------------------------------------------------------
   const sendAnswer = index => {
     if (hasAnswered) return;
+
+    const timeSpent = 30 - timeLeft;
 
     setHasAnswered(true);
     setSelectedIndex(index);
 
-    if (!isHost) {
-      setPausePolling(true);
-    }
-
-    fetch(`http://localhost:8080/api/rooms/${roomCode}/answer`, {
+    fetch(`http://localhost:8080/api/rooms/${cleanRoomCode}/answer`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         userId: user.id,
-        chosenIndex: index
+        chosenIndex: index,
+        timeSpent: timeSpent
       })
     })
       .then(res => res.text())
@@ -166,16 +170,12 @@ export default function GameRoomPage() {
       .then(result => {
         if (!result) return;
         setRoundResult(result);
-
-        if (isHost) {
-          setPausePolling(false);
-        }
       });
   };
 
-  // -----------------------------
+  // ---------------------------------------------------------
   // RENDER
-  // -----------------------------
+  // ---------------------------------------------------------
   if (!room) return <p>Cargando sala...</p>;
 
   return (

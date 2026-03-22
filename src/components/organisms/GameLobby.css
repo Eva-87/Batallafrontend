@@ -21,3 +21,10 @@
   gap: 10px;
   margin-top: 15px;
 }
+.gr-panel {
+  background: #ffffff11;
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 120px; /* 👈 mueve todo hacia abajo */
+  margin-top: 100px; /* fuerza separación real */
+}

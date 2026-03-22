@@ -10,14 +10,20 @@ export default function JoinRoomPage() {
     const user = JSON.parse(localStorage.getItem("user"));
     if (!user) return alert("Debes iniciar sesión");
 
-    const res = await fetch(`http://localhost:8080/api/rooms/${code}/join`, {
+    const cleanCode = code.trim(); // ⭐ LIMPIA ESPACIOS
+
+    const res = await fetch(`http://localhost:8080/api/rooms/${cleanCode}/join`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userId: user.id })
     });
 
-    if (res.ok) navigate(`/game/${code}`);
-    else alert("Código inválido");
+    if (!res.ok) {
+      alert("Código inválido");
+      return;
+    }
+
+    navigate(`/game/${cleanCode}`); // ⭐ NAVEGA A LA SALA CORRECTA
   };
 
   return (
