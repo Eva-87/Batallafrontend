@@ -8,19 +8,43 @@
   max-width: 600px;
   margin: 20px auto;
   border-collapse: collapse;
+  background: #004aad; /* Azul elegante */
+  color: white; /* Texto blanco */
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .ranking-table th,
 .ranking-table td {
-  padding: 10px;
-  border: 1px solid #ddd;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .ranking-table th {
-  background: #333;
-  color: white;
+  background: #00337a; /* Azul más oscuro */
+  font-weight: bold;
 }
 
 .ranking-table tr:nth-child(even) {
-  background: #f7f7f7;
+  background: #0056c7; /* Azul intermedio */
+}
+
+.ranking-table tr:nth-child(odd) {
+  background: #004aad;
+}
+
+.winner-message {
+  margin-top: 10px;
+  font-size: 26px;
+  font-weight: bold;
+  color: #00ff9d; /* Verde brillante */
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.4);
+}
+
+.tie-message {
+  margin-top: 10px;
+  font-size: 22px;
+  font-weight: bold;
+  color: #ffeb3b; /* Amarillo */
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.4);
 }

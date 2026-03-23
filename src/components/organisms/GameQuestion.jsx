@@ -7,7 +7,11 @@ export default function GameQuestion({
   hasAnswered,
   onAnswer
 }) {
-  if (!question) return null;
+
+  // Protección contra datos incompletos
+  if (!question || !question.options || question.options.length === 0) {
+    return <p>Cargando pregunta...</p>;
+  }
 
   return (
     <div className="question-container">

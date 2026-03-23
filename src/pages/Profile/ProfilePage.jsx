@@ -102,7 +102,8 @@ export default function ProfilePage() {
 
       <div className="stats-section">
         <StatCard label="Quizzes creados" value={myQuizzes.length} />
-        <StatCard label="Victorias" value={0} />
+        <StatCard label="Victorias" value={user.wins || 0} />
+
       </div>
 
       <h2>Mis Quizzes</h2>

@@ -32,37 +32,59 @@ export default function GameRoomPage() {
     room?.creator?.user?.id === user?.id;
 
   // ---------------------------------------------------------
-  // POLLING
+  // POLLING GENERAL (MODIFICADO)
   // ---------------------------------------------------------
   useEffect(() => {
     if (!cleanRoomCode) return;
 
+    // ⛔ Si el juego terminó, NO seguir haciendo polling
+    if (status === "FINISHED") return;
+
     const poll = () => {
-      // Room info
-      fetch(`http://localhost:8080/api/rooms/${cleanRoomCode}`)
-        .then(res => (res.ok ? res.json() : null))
-        .then(data => data && setRoom(data));
-
-      // Current question (⭐ clave para que Pili vea la pregunta)
-      fetch(`http://localhost:8080/api/rooms/${cleanRoomCode}/question`)
-        .then(res => (res.ok ? res.json() : null))
-        .then(q => q && setQuestion(q));
-
-      // Players
-      fetch(`http://localhost:8080/api/rooms/${cleanRoomCode}/players`)
-        .then(res => (res.ok ? res.json() : []))
-        .then(data => setPlayers(data));
-
-      // Status
       fetch(`http://localhost:8080/api/rooms/${cleanRoomCode}/status`)
-        .then(res => (res.ok ? res.json() : null))
-        .then(st => st && setStatus(st));
+        .then(res => res.json())
+        .then(st => {
+          if (st) setStatus(st.status);
+
+          fetch(`http://localhost:8080/api/rooms/${cleanRoomCode}`)
+            .then(res => res.json())
+            .then(data => setRoom(data));
+
+          // 🔥 Solo pedir pregunta si el backend dice PLAYING
+          if (st?.status === "PLAYING") {
+            fetch(`http://localhost:8080/api/rooms/${cleanRoomCode}/question`)
+              .then(res => res.json())
+              .then(q => q && setQuestion(q));
+          }
+
+          fetch(`http://localhost:8080/api/rooms/${cleanRoomCode}/players`)
+            .then(res => res.json())
+            .then(data => setPlayers(data));
+        });
     };
 
     poll();
     const interval = setInterval(poll, 1500);
     return () => clearInterval(interval);
-  }, [cleanRoomCode]);
+  }, [cleanRoomCode, status]);
+
+  // ---------------------------------------------------------
+  // POLLING DE RESULTADOS DE RONDA
+  // ---------------------------------------------------------
+  useEffect(() => {
+    if (status !== "SHOWING_RESULTS") return;
+
+    const interval = setInterval(() => {
+      fetch(`http://localhost:8080/api/rooms/${cleanRoomCode}/round-result`)
+        .then(res => {
+          if (!res.ok || res.status === 204) return null;
+          return res.json();
+        })
+        .then(data => data && setRoundResult(data));
+    }, 500);
+
+    return () => clearInterval(interval);
+  }, [status, cleanRoomCode]);
 
   // ---------------------------------------------------------
   // TIMER
@@ -146,6 +168,26 @@ export default function GameRoomPage() {
   };
 
   // ---------------------------------------------------------
+  // 🔥 NUEVO: AUTO-FINISH PARA TODOS LOS JUGADORES
+  // ---------------------------------------------------------
+  useEffect(() => {
+    if (status === "FINISHED" && !ranking && cleanRoomCode) {
+      fetch(`http://localhost:8080/api/rooms/${cleanRoomCode}/finish`, {
+        method: "POST"
+      })
+        .then(res => res.text())
+        .then(text => (text ? JSON.parse(text) : null))
+        .then(data => {
+          if (data) {
+            setRanking(data.ranking);
+            setQuestion(null);
+            setRoundResult(null);
+          }
+        });
+    }
+  }, [status, ranking, cleanRoomCode]);
+
+  // ---------------------------------------------------------
   // SEND ANSWER
   // ---------------------------------------------------------
   const sendAnswer = index => {
@@ -196,7 +238,7 @@ export default function GameRoomPage() {
         />
       )}
 
-      {status === "SHOWING_RESULTS" && roundResult && question && (
+      {status === "SHOWING_RESULTS" && roundResult && (
         <GameRoundResults
           roundResult={roundResult}
           question={question}
